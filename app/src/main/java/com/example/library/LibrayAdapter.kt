@@ -1,11 +1,14 @@
 package com.example.library
 
+import android.content.Context
+import android.icu.text.Transliterator.Position
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 
@@ -15,6 +18,7 @@ interface  OnItemClickListener {
 
 // Объявление класса адаптера. Поле - список предметов библиотеки
 class LibraryAdapter(
+    private val context: Context,
     private val data: MutableList<LibraryItem>,
     private val itemClickListener: OnItemClickListener
 ) : RecyclerView.Adapter<LibraryAdapter.ViewHolder>() {
@@ -71,4 +75,15 @@ class LibraryAdapter(
     }
     // Переопределение метода для получения количества элементов в списке
     override fun getItemCount(): Int = data.size
+
+    // Метод для удаления элемента
+    fun removeItem(position: Int) {
+        // Удаление элемента из mutableList
+        data.removeAt(position)
+        // Уведомление адаптера об удалении и сжатие списка (RangeChanged)
+        notifyItemRemoved(position)
+        notifyItemRangeChanged(position, data.size)
+        // Вывод информационного тоста
+        Toast.makeText(context, "Элемент с id ${data[position].id} удален", Toast.LENGTH_SHORT).show()
+    }
 }

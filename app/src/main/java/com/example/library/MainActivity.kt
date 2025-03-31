@@ -3,6 +3,7 @@ package com.example.library
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
@@ -13,7 +14,7 @@ class MainActivity : AppCompatActivity(), OnItemClickListener {
         setContentView(R.layout.activity_main)
         // Поиск элемента recyclerView
         val recyclerView: RecyclerView = findViewById(R.id.recyclerView)
-        // Тестовые данные
+        // Тестовые данные (сгенерировано нееросетью)
         val libraryItems: MutableList<LibraryItem> = mutableListOf(
             Book(1, "Преступление и наказание", true, 300, "Фёдор Достоевский"),
             Book(2, "Война и мир", true, 1200, "Лев Толстой"),
@@ -49,11 +50,15 @@ class MainActivity : AppCompatActivity(), OnItemClickListener {
             Disk(30, "Звёздные войны: Новая надежда", true, 1)
         )
         // Создание адаптера и передача ему списка объектов
-        val adapter = LibraryAdapter(libraryItems, this)
+        val adapter = LibraryAdapter(this, libraryItems, this)
         // Указание recyclerView правила располагания элементов (список в данном случае)
         recyclerView.layoutManager = LinearLayoutManager(this)
         // Установка адаптера для recyclerView
         recyclerView.adapter = adapter
+        // Создание ItemTouchHelper и его привязка к recycleView
+        val swipeToDateleCallback = SwipeToDeleteCallback(adapter)
+        val itemTouchHelper = ItemTouchHelper(swipeToDateleCallback)
+        itemTouchHelper.attachToRecyclerView(recyclerView)
     }
 
     override fun onItemClick(item: LibraryItem) {
