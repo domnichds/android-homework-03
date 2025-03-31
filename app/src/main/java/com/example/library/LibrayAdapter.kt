@@ -78,12 +78,11 @@ class LibraryAdapter(
 
     // Метод для удаления элемента
     fun removeItem(position: Int) {
+        // Вывод информационного тоста
+        Toast.makeText(context, "Элемент с id ${data[position].id} удален", Toast.LENGTH_SHORT).show()
         // Удаление элемента из mutableList
         data.removeAt(position)
         // Уведомление адаптера об удалении и сжатие списка (RangeChanged)
         notifyItemRemoved(position)
-        notifyItemRangeChanged(position, data.size)
-        // Вывод информационного тоста
-        Toast.makeText(context, "Элемент с id ${data[position].id} удален", Toast.LENGTH_SHORT).show()
-    }
+        notifyItemRangeChanged(position, data.size) }
 }
