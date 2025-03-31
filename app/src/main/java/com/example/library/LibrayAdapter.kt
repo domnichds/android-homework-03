@@ -50,9 +50,7 @@ class LibraryAdapter(
                 else -> R.drawable.unknown
             }
         )
-
-        Log.d("LibraryAdapter", "onBindViewHolder: Привязываем элемент с id=${item.id}, name=${item.name}")
-
+        
         // Установка стиля в зависимости от доступности
         if (item.accessible) {
             holder.cardView.elevation = holder.itemView.context.resources.getDimension(R.dimen.enable_elevation)
