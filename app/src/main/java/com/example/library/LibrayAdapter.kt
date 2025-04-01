@@ -81,6 +81,7 @@ class LibraryAdapter(
         }
     }
 
+    // Метод для обновления списка
     fun updateList(newList: List<LibraryItem>) {
         submitList(newList)
     }
