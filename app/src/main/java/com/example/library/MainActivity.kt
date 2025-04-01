@@ -50,11 +50,12 @@ class MainActivity : AppCompatActivity(), OnItemClickListener {
             Disk(30, "Звёздные войны: Новая надежда", true, 1)
         )
         // Создание адаптера и передача ему списка объектов
-        val adapter = LibraryAdapter(this, libraryItems, this)
+        val adapter = LibraryAdapter(this, this)
         // Указание recyclerView правила располагания элементов (список в данном случае)
         recyclerView.layoutManager = LinearLayoutManager(this)
         // Установка адаптера для recyclerView
         recyclerView.adapter = adapter
+        adapter.submitList(libraryItems)
         // Создание ItemTouchHelper и его привязка к recycleView
         val swipeToDateleCallback = SwipeToDeleteCallback(adapter)
         val itemTouchHelper = ItemTouchHelper(swipeToDateleCallback)

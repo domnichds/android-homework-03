@@ -1,5 +1,7 @@
 package com.example.library
 
+import androidx.recyclerview.widget.DiffUtil
+
 // Перечисление для месяцев
 enum class Month(val russianName: String) {
     JANUARY("Январь"),
@@ -15,147 +17,212 @@ enum class Month(val russianName: String) {
     NOVEMBER("Ноябрь"),
     DECEMBER("Декабрь");
 
-    override fun toString(): String {
-        return russianName
-    }
+    // Метод для получения строки с названием месяца на русском языке
+    override fun toString(): String = russianName
 }
+
+// Интерфейсы для действий с объектами библиотеки
 
 // Интерфейс для объектов, которые можно взять домой
 interface Borrowable {
-    fun borrowItem()
+    // Метод для взятия объекта домой, возвращает обновлённый объект
+    fun borrowItem(): LibraryItem
 }
 
-// Интерфейс для объектов, которые можно использовать в библиотеке
+// Интерфейс для объектов, которые можно использовать в читальном зале
 interface ReadableInLibrary {
-    fun readInLibrary()
+    // Метод для взятия объекта в читальный зал, возвращает обновлённый объект
+    fun readInLibrary(): LibraryItem
 }
 
-// Интерфейс для объектов, которые можно вернуть
-// В конкретной задаче не нужен, но полезен для масштабирования
+// Интерфейс для объектов, которые можно вернуть в библиотеку
 interface Returnable {
-    fun returnItem()
+    // Метод для возврата объекта, возвращает обновлённый объект
+    fun returnItem(): LibraryItem
 }
 
-abstract class LibraryItem(var id: Int, var name: String, var accessible: Boolean) {
+// Базовый sealed-класс для объектов библиотеки
+sealed class LibraryItem {
+    // Уникальный идентификатор объекта
+    abstract val id: Int
+    // Название объекта
+    abstract val name: String
+    // Флаг доступности объекта
+    abstract val accessible: Boolean
+
     // Метод для получения краткой информации об объекте
     fun getOneLineInfo(): String = "$name | Доступность: ${if (accessible) "да" else "нет"}"
 
-    // Абстрактный метод получения подробной информации
+    // Абстрактный метод для получения подробной информации об объекте
     abstract fun getInfo(): String
 
-    // Метод для изменения доступности с true на false при взятии объекта в зал или домой
-    protected fun toggleAccessibility(successMessage: String, failureMessage: String) {
-        if (accessible) {
-            println(successMessage)
-            accessible = false
-        } else {
-            println(failureMessage)
-        }
-    }
-
-    // Метод для изменения доступности объекта с false на true при возврате в библиотеку
-    protected fun marksAsAccessible(successMessage: String, failureMessage: String) {
-        if (!accessible) {
-            println(successMessage)
-            accessible = true
-        } else {
-            println(failureMessage)
-        }
-    }
+    // Абстрактный метод для копирования с новым статусом
+    abstract fun copyWithNewState(newState: Boolean): LibraryItem
 }
 
-class Book(id: Int, name: String, accessible: Boolean, private var numberOfPages: Int, private var author: String) :
-    LibraryItem(id, name, accessible), Borrowable, ReadableInLibrary, Returnable {
+// Data-класс для книги
+data class Book(
+    override val id: Int,
+    override val name: String,
+    override val accessible: Boolean,
+    // Количество страниц в книге
+    val numberOfPages: Int,
+    // Автор книги
+    val author: String
+) : LibraryItem(), Borrowable, ReadableInLibrary, Returnable {
+
+    // Метод получения подробной информации о книге
     override fun getInfo(): String =
         "Книга: $name ($numberOfPages стр.) автора: $author с id: $id | Доступность: ${if (accessible) "да" else "нет"}"
 
-    override fun borrowItem() {
-        toggleAccessibility(
-            "Книга $name взята домой",
-            "Книга $name уже на руках"
-        )
-    }
+    // Метод для взятия книги домой
+    override fun borrowItem(): Book =
+        if (accessible) {
+            println("Книга $name взята домой")
+            // Возвращаем копию с изменённым состоянием доступности
+            copy(accessible = false)
+        } else {
+            println("Книга $name уже на руках")
+            this
+        }
 
-    override fun readInLibrary() {
-        toggleAccessibility(
-            "Книга $name взята в читальный зал",
-            "Книга $name уже на руках"
-        )
-    }
+    // Метод для взятия книги в читальный зал
+    override fun readInLibrary(): Book =
+        if (accessible) {
+            println("Книга $name взята в читальный зал")
+            // Возвращаем копию с изменённым состоянием доступности
+            copy(accessible = false)
+        } else {
+            println("Книга $name уже на руках")
+            this
+        }
 
-    override fun returnItem() {
-        marksAsAccessible(
-            "Книга $name возвращена в библиотеку",
-            "Книга $name уже в библиотеке"
-        )
+    // Метод для возврата книги в библиотеку
+    override fun returnItem(): Book =
+        if (!accessible) {
+            println("Книга $name возвращена в библиотеку")
+            // Возвращаем копию с изменённым состоянием доступности
+            copy(accessible = true)
+        } else {
+            println("Книга $name уже в библиотеке")
+            this
+        }
+    override fun copyWithNewState(newState: Boolean): Book {
+        return copy(accessible = newState)
     }
-
 }
 
-class Newspaper(id: Int, name: String, accessible: Boolean, private var issueNumber: Int, private var monthOfPublication: Month) :
-    LibraryItem(id, name, accessible), ReadableInLibrary, Returnable {
+// Data-класс для газеты
+data class Newspaper(
+    override val id: Int,
+    override val name: String,
+    override val accessible: Boolean,
+    // Номер выпуска газеты
+    val issueNumber: Int,
+    // Месяц выпуска газеты
+    val monthOfPublication: Month
+) : LibraryItem(), ReadableInLibrary, Returnable {
+
+    // Метод получения подробной информации о газете
     override fun getInfo(): String =
         "Выпуск: $issueNumber от месяца ${monthOfPublication.russianName} газеты $name с id: $id | Доступность: ${if (accessible) "да" else "нет"}"
 
-    override fun readInLibrary() {
-        toggleAccessibility(
-            "Газета $name №$issueNumber взята в читальный зал",
-            "Газета $name №$issueNumber уже на руках"
-        )
+    // Метод для взятия газеты в читальный зал
+    override fun readInLibrary(): Newspaper =
+        if (accessible) {
+            println("Газета $name №$issueNumber взята в читальный зал")
+            // Возвращаем копию с изменённым состоянием доступности
+            copy(accessible = false)
+        } else {
+            println("Газета $name №$issueNumber уже на руках")
+            this
+        }
+
+    // Метод для возврата газеты в библиотеку
+    override fun returnItem(): Newspaper =
+        if (!accessible) {
+            println("Газета $name №$issueNumber возвращена в библиотеку")
+            // Возвращаем копию с изменённым состоянием доступности
+            copy(accessible = true)
+        } else {
+            println("Газета $name №$issueNumber уже в библиотеке")
+            this
+        }
+
+    override fun copyWithNewState(newState: Boolean): Newspaper {
+        return copy(accessible = newState)
     }
 
-    override fun returnItem() {
-        marksAsAccessible(
-            "Газета $name №$issueNumber возращена в библиотеку",
-            "Газета $name №$issueNumber уже в библиотеке"
-        )
-    }
 }
 
-class Disk(id: Int, name: String, accessible: Boolean, private var type: Int) :
-    LibraryItem(id, name, accessible), Borrowable, Returnable {
+// Data-класс для диска
+data class Disk(
+    override val id: Int,
+    override val name: String,
+    override val accessible: Boolean,
+    // Тип диска: 0 для CD, 1 для DVD
+    val type: Int
+) : LibraryItem(), Borrowable, Returnable {
+
+    // Метод получения подробной информации о диске
     override fun getInfo(): String =
         "${if (type == 0) "CD" else "DVD"} $name | Доступность: ${if (accessible) "да" else "нет"}"
 
-    override fun borrowItem() {
-        toggleAccessibility(
-            "${if (type == 0) "CD" else "DVD"} диск $name взят домой",
-            "${if (type == 0) "CD" else "DVD"} диск $name уже на руках"
-        )
-    }
+    // Метод для взятия диска домой
+    override fun borrowItem(): Disk =
+        if (accessible) {
+            println("${if (type == 0) "CD" else "DVD"} диск $name взят домой")
+            // Возвращаем копию с изменённым состоянием доступности
+            copy(accessible = false)
+        } else {
+            println("${if (type == 0) "CD" else "DVD"} диск $name уже на руках")
+            this
+        }
 
-    override fun returnItem() {
-        marksAsAccessible(
-            "${if (type == 0) "CD" else "DVD"} диск $name возращен в библиотеку",
-            "${if (type == 0) "CD" else "DVD"} диск $name уже в библиотеке"
-        )
+    // Метод для возврата диска в библиотеку
+    override fun returnItem(): Disk =
+        if (!accessible) {
+            println("${if (type == 0) "CD" else "DVD"} диск $name возвращен в библиотеку")
+            // Возвращаем копию с изменённым состоянием доступности
+            copy(accessible = true)
+        } else {
+            println("${if (type == 0) "CD" else "DVD"} диск $name уже в библиотеке")
+            this
+        }
+
+    override fun copyWithNewState(newState: Boolean): Disk {
+        return copy(accessible = newState)
     }
 }
 
-class LibraryManager(private val libraryItemList: MutableList<LibraryItem>) {
+// Класс-менеджер для работы с коллекцией объектов библиотеки
+class LibraryManager(private val libraryItemList: List<LibraryItem>) {
 
     // Метод для печати списка объектов по типу
     fun printList(type: Int) {
+        // Фильтрация списка по типу объекта
         val list = when (type) {
             1 -> libraryItemList.filterIsInstance<Book>()
             2 -> libraryItemList.filterIsInstance<Newspaper>()
             3 -> libraryItemList.filterIsInstance<Disk>()
             else -> emptyList()
         }
+        // Вывод краткой информации по каждому объекту с индексом
         list.forEachIndexed { index, item ->
             println("${index + 1}. ${item.getOneLineInfo()}")
         }
     }
 
-    // Метод для получения объекта по типу и индексу в этом типе
+    // Метод для получения объекта по типу и индексу в отфильтрованном списке
     fun getItem(type: Int, index: Int): LibraryItem? {
+        // Фильтрация списка по типу объекта
         val list = when (type) {
             1 -> libraryItemList.filterIsInstance<Book>()
             2 -> libraryItemList.filterIsInstance<Newspaper>()
             3 -> libraryItemList.filterIsInstance<Disk>()
             else -> emptyList()
         }
-        // Возвращаем null, если выбор типа или номера в типа неверен
-        return if (index in list.indices) list[index] else null
+        // Возвращаем объект по индексу или null, если индекс неверен
+        return list.getOrNull(index)
     }
 }
