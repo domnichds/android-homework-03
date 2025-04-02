@@ -1,7 +1,6 @@
 package com.example.library
 
 import android.content.Context
-import android.icu.text.Transliterator.Position
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -14,14 +13,14 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 
 interface  OnItemClickListener {
-    fun onItemClick(item: LibraryItem)
+    fun onItemClick(id: Int)
 }
 
 // Объявление класса адаптера. Поле - список предметов библиотеки
 class LibraryAdapter(
-    private val context: Context,
     private val itemClickListener: OnItemClickListener
 ) : ListAdapter<LibraryItem, LibraryAdapter.ViewHolder>(LibraryItemDiffCallback()) {
+
     // Внутренний класс с сылками на элементы карточки
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val cardView: CardView = view.findViewById(R.id.cardView)
@@ -47,6 +46,7 @@ class LibraryAdapter(
 
         holder.nameTextView.text = item.name
         holder.idTextView.text = "ID: ${item.id.toString()}"
+        // Установка иконки в зависимости от типа элемента
         holder.iconImageView.setImageResource(
             when (item) {
                 is Book -> R.drawable.book
@@ -73,38 +73,7 @@ class LibraryAdapter(
 
         // Привязка слушателя к методу onItemClick
         holder.itemView.setOnClickListener {
-            val position = holder.adapterPosition
-            if (position != RecyclerView.NO_POSITION) {
-                toggleItemState(position)
-                itemClickListener.onItemClick(getItem(position))
-            }
+            itemClickListener.onItemClick(item.id)
         }
-    }
-
-    // Метод для обновления списка
-    fun updateList(newList: List<LibraryItem>) {
-        submitList(newList)
-    }
-
-    // Метод для удаления элемента по позиции
-    fun removeItem(position: Int) {
-        // Создание изменяемой копии текущего списка
-        val currentListMutable = currentList.toMutableList()
-        // Вывод информационного тоста
-        Toast.makeText(context, "Элемент с id ${currentListMutable[position].id} удален", Toast.LENGTH_SHORT).show()
-        // Удаление элемента по позиции
-        currentListMutable.removeAt(position)
-        // Передача нового списка адаптеру
-        submitList(currentListMutable)
-    }
-
-    fun toggleItemState(position: Int) {
-        // Получение старого элемента и измененного с другим состоянием
-        val item = getItem(position)
-        val updatedItem = item.copyWithNewState(!item.accessible)
-        // Смена элемента и обновление списка
-        val newList = currentList.toMutableList()
-        newList[position] = updatedItem
-        submitList(newList)
     }
 }

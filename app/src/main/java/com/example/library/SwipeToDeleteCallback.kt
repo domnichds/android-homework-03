@@ -2,9 +2,12 @@ package com.example.library
 
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
+import com.example.library.LibraryItem
 
-class SwipeToDeleteCallback(private val adapter: LibraryAdapter) :
-    ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
+class SwipeToDeleteCallback(private val onSwipedCallback: (LibraryItem) -> Unit,
+    private val recyclerView: RecyclerView)
+    : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
+
     // Переопределение метода для перемещения элементов (запрещает перемещение возвратом false)
     override fun onMove(
         recyclerView: RecyclerView,
@@ -16,8 +19,14 @@ class SwipeToDeleteCallback(private val adapter: LibraryAdapter) :
 
     // Переопределение метода для свайпа
     override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-        // Получение позиции элемента и его удаление
+        // Получение адаптера элемента
         val position = viewHolder.adapterPosition
-        adapter.removeItem(position)
+        val context = viewHolder.itemView.context
+        val adapter = recyclerView.adapter as? LibraryAdapter
+
+        // Передача элемента в onSwipedCallback
+        if (viewHolder.adapterPosition != RecyclerView.NO_POSITION) {
+            onSwipedCallback(adapter?.currentList?.get(viewHolder.adapterPosition)!!)
+        }
     }
 }
