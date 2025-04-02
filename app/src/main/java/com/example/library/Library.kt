@@ -50,12 +50,6 @@ sealed class LibraryItem {
     // Флаг доступности объекта
     abstract val accessible: Boolean
 
-    // Метод для получения краткой информации об объекте
-    fun getOneLineInfo(): String = "$name | Доступность: ${if (accessible) "да" else "нет"}"
-
-    // Абстрактный метод для получения подробной информации об объекте
-    abstract fun getInfo(): String
-
     // Абстрактный метод для копирования с новым статусом
     abstract fun copyWithNewState(newState: Boolean): LibraryItem
 }
@@ -65,15 +59,10 @@ data class Book(
     override val id: Int,
     override val name: String,
     override val accessible: Boolean,
-    // Количество страниц в книге
     val numberOfPages: Int,
-    // Автор книги
     val author: String
 ) : LibraryItem(), Borrowable, ReadableInLibrary, Returnable {
 
-    // Метод получения подробной информации о книге
-    override fun getInfo(): String =
-        "Книга: $name ($numberOfPages стр.) автора: $author с id: $id | Доступность: ${if (accessible) "да" else "нет"}"
 
     // Метод для взятия книги домой
     override fun borrowItem(): Book =
@@ -107,6 +96,7 @@ data class Book(
             println("Книга $name уже в библиотеке")
             this
         }
+
     override fun copyWithNewState(newState: Boolean): Book {
         return copy(accessible = newState)
     }
@@ -122,10 +112,6 @@ data class Newspaper(
     // Месяц выпуска газеты
     val monthOfPublication: Month
 ) : LibraryItem(), ReadableInLibrary, Returnable {
-
-    // Метод получения подробной информации о газете
-    override fun getInfo(): String =
-        "Выпуск: $issueNumber от месяца ${monthOfPublication.russianName} газеты $name с id: $id | Доступность: ${if (accessible) "да" else "нет"}"
 
     // Метод для взятия газеты в читальный зал
     override fun readInLibrary(): Newspaper =
@@ -164,10 +150,6 @@ data class Disk(
     val type: Int
 ) : LibraryItem(), Borrowable, Returnable {
 
-    // Метод получения подробной информации о диске
-    override fun getInfo(): String =
-        "${if (type == 0) "CD" else "DVD"} $name | Доступность: ${if (accessible) "да" else "нет"}"
-
     // Метод для взятия диска домой
     override fun borrowItem(): Disk =
         if (accessible) {
@@ -192,37 +174,5 @@ data class Disk(
 
     override fun copyWithNewState(newState: Boolean): Disk {
         return copy(accessible = newState)
-    }
-}
-
-// Класс-менеджер для работы с коллекцией объектов библиотеки
-class LibraryManager(private val libraryItemList: List<LibraryItem>) {
-
-    // Метод для печати списка объектов по типу
-    fun printList(type: Int) {
-        // Фильтрация списка по типу объекта
-        val list = when (type) {
-            1 -> libraryItemList.filterIsInstance<Book>()
-            2 -> libraryItemList.filterIsInstance<Newspaper>()
-            3 -> libraryItemList.filterIsInstance<Disk>()
-            else -> emptyList()
-        }
-        // Вывод краткой информации по каждому объекту с индексом
-        list.forEachIndexed { index, item ->
-            println("${index + 1}. ${item.getOneLineInfo()}")
-        }
-    }
-
-    // Метод для получения объекта по типу и индексу в отфильтрованном списке
-    fun getItem(type: Int, index: Int): LibraryItem? {
-        // Фильтрация списка по типу объекта
-        val list = when (type) {
-            1 -> libraryItemList.filterIsInstance<Book>()
-            2 -> libraryItemList.filterIsInstance<Newspaper>()
-            3 -> libraryItemList.filterIsInstance<Disk>()
-            else -> emptyList()
-        }
-        // Возвращаем объект по индексу или null, если индекс неверен
-        return list.getOrNull(index)
     }
 }
