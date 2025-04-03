@@ -2,7 +2,6 @@ package com.example.library
 
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
-import com.example.library.LibraryItem
 
 class SwipeToDeleteCallback(private val onSwipedCallback: (LibraryItem) -> Unit,
     private val recyclerView: RecyclerView)

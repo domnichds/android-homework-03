@@ -8,13 +8,10 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.library.R
-import com.example.library.viewmodel.LibraryViewModel
 
 class MainActivity : AppCompatActivity(), OnItemClickListener {
 
     private lateinit var viewModel: LibraryViewModel
-    private lateinit var adapter: LibraryAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,7 +25,7 @@ class MainActivity : AppCompatActivity(), OnItemClickListener {
         val adapter = LibraryAdapter(this)
         recyclerView.adapter = adapter
         // Получение ViewModel
-        viewModel = ViewModelProvider(this).get(LibraryViewModel::class.java)
+        viewModel = ViewModelProvider(this)[LibraryViewModel::class.java]
         // Наблюдение за списком элементов
         viewModel.items.observe(this, Observer { items ->
             adapter.submitList(items)

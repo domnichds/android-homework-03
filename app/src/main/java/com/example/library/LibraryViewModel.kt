@@ -1,10 +1,8 @@
-package com.example.library.viewmodel
+package com.example.library
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.library.LibraryItem
-import com.example.library.repository.ItemRepository
 
 class LibraryViewModel : ViewModel() {
 

@@ -1,10 +1,4 @@
-package com.example.library.repository
-
-import com.example.library.LibraryItem
-import com.example.library.Book
-import com.example.library.Newspaper
-import com.example.library.Disk
-import com.example.library.Month
+package com.example.library
 
 class ItemRepository {
 
