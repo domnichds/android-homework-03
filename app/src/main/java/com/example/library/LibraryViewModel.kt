@@ -5,7 +5,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
 class LibraryViewModel : ViewModel() {
-
     // Репозиторий
     private val repository = ItemRepository()
     // LiveData для списка элементов

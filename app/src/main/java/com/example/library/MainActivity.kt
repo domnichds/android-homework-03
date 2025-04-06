@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
-class MainActivity : AppCompatActivity(), OnItemClickListener {
+class MainActivity : AppCompatActivity() {
 
     private lateinit var viewModel: LibraryViewModel
 
@@ -18,7 +18,7 @@ class MainActivity : AppCompatActivity(), OnItemClickListener {
         setContentView(R.layout.activity_main)
         val recyclerView: RecyclerView = findViewById(R.id.rv_library_list)
         recyclerView.layoutManager = LinearLayoutManager(this)
-        val adapter = LibraryAdapter(this)
+        val adapter = LibraryAdapter {id -> onItemClick(id)}
         recyclerView.adapter = adapter
         viewModel = ViewModelProvider(this)[LibraryViewModel::class.java]
 
@@ -38,7 +38,7 @@ class MainActivity : AppCompatActivity(), OnItemClickListener {
         itemTouchHelper.attachToRecyclerView(recyclerView)
     }
 
-    override fun onItemClick(id: Int) {
+    private fun onItemClick(id: Int) {
         viewModel.toggleItemState(id)
         Toast.makeText(this, "Элемент с id $id", Toast.LENGTH_SHORT).show()
     }
