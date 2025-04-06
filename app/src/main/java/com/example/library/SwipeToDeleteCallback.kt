@@ -3,9 +3,10 @@ package com.example.library
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 
-class SwipeToDeleteCallback(private val onSwipedCallback: (LibraryItem) -> Unit,
-    private val recyclerView: RecyclerView)
-    : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
+class SwipeToDeleteCallback(
+    private val onSwipedCallback: (LibraryItem) -> Unit,
+    private val recyclerView: RecyclerView
+) : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
 
     // Переопределение метода для перемещения элементов (запрещает перемещение возвратом false)
     override fun onMove(

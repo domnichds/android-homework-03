@@ -15,17 +15,13 @@ class MainActivity : AppCompatActivity(), OnItemClickListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // Установка макета activity_main
         setContentView(R.layout.activity_main)
-        // Поиск элемента recyclerView
-        val recyclerView: RecyclerView = findViewById(R.id.recyclerView)
-        // Указание recyclerView правила располагания элементов (список в данном случае)
+        val recyclerView: RecyclerView = findViewById(R.id.rv_library_list)
         recyclerView.layoutManager = LinearLayoutManager(this)
-        // Создание и установка адаптера
         val adapter = LibraryAdapter(this)
         recyclerView.adapter = adapter
-        // Получение ViewModel
         viewModel = ViewModelProvider(this)[LibraryViewModel::class.java]
+
         // Наблюдение за списком элементов
         viewModel.items.observe(this, Observer { items ->
             adapter.submitList(items)
@@ -43,9 +39,7 @@ class MainActivity : AppCompatActivity(), OnItemClickListener {
     }
 
     override fun onItemClick(id: Int) {
-        // Смена состояния объекта
         viewModel.toggleItemState(id)
-        // Вывод короткого тоста с текстом
         Toast.makeText(this, "Элемент с id $id", Toast.LENGTH_SHORT).show()
     }
 }

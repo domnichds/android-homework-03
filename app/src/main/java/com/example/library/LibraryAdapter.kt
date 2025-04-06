@@ -19,12 +19,20 @@ class LibraryAdapter(
     private val itemClickListener: OnItemClickListener
 ) : ListAdapter<LibraryItem, LibraryAdapter.ViewHolder>(LibraryItemDiffCallback()) {
 
+    // Константы для изменения состояния карточки
+    companion object {
+        val ENABLE_ELEVATION = R.dimen.enable_elevation
+        val DISABLE_ELEVATION = R.dimen.disable_elevation
+        const val ENABLE_ALPHA = 1f
+        const val DISABLE_ALPHA = 0.3f
+    }
+
     // Внутренний класс с сылками на элементы карточки
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val cardView: CardView = view.findViewById(R.id.cardView)
-        val nameTextView: TextView = view.findViewById(R.id.nameTextView)
-        val idTextView: TextView = view.findViewById(R.id.idTextView)
-        val iconImageView: ImageView = view.findViewById(R.id.iconImageView)
+        val cardView: CardView = view.findViewById(R.id.cv_library_item)
+        val nameTextView: TextView = view.findViewById(R.id.tv_card_item_name)
+        val idTextView: TextView = view.findViewById(R.id.tv_card_item_id)
+        val iconImageView: ImageView = view.findViewById(R.id.iv_card_icon)
     }
 
     // Переопределение метода создания элемента списка
@@ -57,16 +65,16 @@ class LibraryAdapter(
         // Установка стиля в зависимости от доступности
         if (item.accessible) {
             holder.cardView.elevation =
-                holder.itemView.context.resources.getDimension(R.dimen.enable_elevation)
-            holder.nameTextView.alpha = 1f
-            holder.idTextView.alpha = 1f
-            holder.iconImageView.alpha = 1f
+                holder.itemView.context.resources.getDimension(ENABLE_ELEVATION)
+            holder.nameTextView.alpha = ENABLE_ALPHA
+            holder.idTextView.alpha = ENABLE_ALPHA
+            holder.iconImageView.alpha = ENABLE_ALPHA
         } else {
             holder.cardView.elevation =
-                holder.itemView.context.resources.getDimension(R.dimen.disable_elevation)
-            holder.nameTextView.alpha = 0.3f
-            holder.idTextView.alpha = 0.3f
-            holder.iconImageView.alpha = 0.3f
+                holder.itemView.context.resources.getDimension(DISABLE_ELEVATION)
+            holder.nameTextView.alpha = DISABLE_ALPHA
+            holder.idTextView.alpha = DISABLE_ALPHA
+            holder.iconImageView.alpha = DISABLE_ALPHA
         }
 
         // Привязка слушателя к методу onItemClick
