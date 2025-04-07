@@ -10,6 +10,9 @@
 .DS_Store
 /build
 /captures
+font_certs.xml
+preloaded_fonts.xml
+app/src/main/res/font/
 .externalNativeBuild
 .cxx
 local.properties

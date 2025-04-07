@@ -15,7 +15,7 @@
         android:paddingTop="?attr/actionBarSize" />
 
     <Button
-        android:id="@+id/b_library_list_add_el"
+        android:id="@+id/b_item_edit_add_el"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_marginBottom="15dp"

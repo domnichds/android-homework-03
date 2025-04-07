@@ -10,7 +10,7 @@ import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 
 // Класс с сылками на элементы карточки и методом для бинда
-class LibraryViewHolder(view: View, private val onItemClick: (Int) -> Unit) : RecyclerView.ViewHolder(view) {
+class LibraryViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
     val cardView: CardView = view.findViewById(R.id.cv_library_item)
     val nameTextView: TextView = view.findViewById(R.id.tv_card_item_name)
