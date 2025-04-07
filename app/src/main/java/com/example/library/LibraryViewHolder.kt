@@ -56,5 +56,8 @@ class LibraryViewHolder(view: View, private val onItemClick: (Int) -> Unit) : Re
         itemView.setOnClickListener {
             onItemClick(item.id)
         }
+
+        // Костыль для автоматической прокрутки длинных названий
+        nameTextView.isSelected = true
     }
 }
