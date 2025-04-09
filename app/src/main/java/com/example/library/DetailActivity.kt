@@ -24,6 +24,11 @@ class DetailActivity : AppCompatActivity() {
         val addFirstTextView: TextView = findViewById(R.id.tv_add_first)
         val addSecondTextView: TextView = findViewById(R.id.tv_add_second)
 
+        // Костыль для прокрутки длинного текста
+        mainFirstTextView.isSelected = true
+        mainSecondTextView.isSelected = true
+
+
         // Установка данных в элементы представления
         itemIconView.setImageResource(itemIcon)
         mainFirstTextView.text = itemName

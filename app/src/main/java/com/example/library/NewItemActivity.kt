@@ -94,8 +94,7 @@ class NewItemActivity : AppCompatActivity() {
                     if (issueNumber != null && month != null) {
                         Newspaper(0, field1, true, issueNumber, month)
                     } else {
-                        Toast.makeText(context, "Введите правильный номер выпуска" +
-                                " и месяц (на русском с заглавной буквы)", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Введите правильный номер выпуска или месяц", Toast.LENGTH_SHORT).show()
                         null
                     }
                 }

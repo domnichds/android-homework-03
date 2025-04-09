@@ -12,7 +12,7 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:clipToPadding="false"
-        android:paddingTop="?attr/actionBarSize" />
+        android:paddingTop="0dp" />
 
     <Button
         android:id="@+id/b_item_edit_add_el"
