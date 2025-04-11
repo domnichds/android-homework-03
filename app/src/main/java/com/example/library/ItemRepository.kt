@@ -1,6 +1,9 @@
 package com.example.library
 
-class ItemRepository {
+import android.util.Log
+
+// Используем синглтон для более удобной работы с репозиторием
+object ItemRepository {
 
     // Список элементов библиотеки (сгенерировано нееросетью)
     private val items = mutableListOf<LibraryItem>(
@@ -53,5 +56,18 @@ class ItemRepository {
     // Метод для удаление элемента по id
     fun removeItem(itemId: Int) {
         items.removeAll { it.id == itemId }
+    }
+
+    // Метод для добавления элемента в список
+    fun addItem(item: LibraryItem) {
+        // Генерация уникального идентификатора для нового элемента
+        val newId = (items.maxOfOrNull { it.id } ?: 0) + 1
+        val newItem = when (item) {
+            is Book -> Book(newId, item.name, item.accessible, item.numberOfPages, item.author)
+            is Disk -> Disk(newId, item.name, item.accessible, item.type)
+            is Newspaper -> Newspaper(newId, item.name, item.accessible, item.issueNumber, item.monthOfPublication)
+            else -> throw IllegalArgumentException("Unknown item type")
+        }
+        items.add(newItem)
     }
 }
