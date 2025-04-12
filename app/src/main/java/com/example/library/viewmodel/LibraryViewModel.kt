@@ -12,6 +12,10 @@ class LibraryViewModel : ViewModel() {
     private val _items = MutableLiveData<List<LibraryItem>>().apply { value = repository.getItems() }
     val items: LiveData<List<LibraryItem>> get() = _items
 
+    // LiveData для события прокрутки к новому элементу
+    private val _scrollToItemEvent = MutableLiveData<Int?>()
+    val scrollToItemEvent: LiveData<Int?> get() = _scrollToItemEvent
+
     // Метод для удаления элемента
     fun removeItem(itemId: Int) {
         repository.removeItem(itemId)
@@ -23,10 +27,18 @@ class LibraryViewModel : ViewModel() {
         // Добавление и подтягивание данных из репозитория
         repository.addItem(item)
         refreshItems()
+
+        _items.value?.lastOrNull()?.let {
+            _scrollToItemEvent.value = it.id
+        }
     }
 
     // Метод для подтягивания данных из репозитория
     fun refreshItems() {
         _items.value = repository.getItems()
+    }
+
+    fun clearScrollEvent() {
+        _scrollToItemEvent.value = null
     }
 }
