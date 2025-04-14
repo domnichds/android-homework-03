@@ -34,23 +34,28 @@
         <argument
             android:name="author"
             app:argType="string"
-            app:nullable="true" />
+            app:nullable="true"
+            android:defaultValue="@null"/>
         <argument
             android:name="pages"
-            app:argType="integer" />
+            app:argType="integer"
+            android:defaultValue="-1"/>
 
         <argument
             android:name="diskType"
             app:argType="string"
-            app:nullable="true" />
+            app:nullable="true"
+            android:defaultValue="@null" />
 
         <argument
             android:name="issueNumber"
-            app:argType="integer" />
+            app:argType="integer"
+            android:defaultValue="-1"/>
         <argument
             android:name="month"
             app:argType="string"
-            app:nullable="true" />
+            app:nullable="true"
+            android:defaultValue="@null"/>
     </fragment>
 
     <fragment

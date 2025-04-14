@@ -11,7 +11,6 @@ import android.widget.Spinner
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.fragment.findNavController
 import com.example.library.Book
 import com.example.library.Disk
 import com.example.library.LibraryItem
@@ -21,46 +20,56 @@ import com.example.library.Newspaper
 import com.example.library.R
 import com.example.library.SpinnerItem
 import com.example.library.SpinnerItemAdapter
+import com.example.library.data.DetailData
 
 class AddFragment : Fragment() {
 
+    // Создание переменной для хранения ViewModel
     private lateinit var viewModel: LibraryViewModel
+
+    companion object {
+        // Создание нового экземпляра фрагмента для добавления элемента
+        fun newInstance(): AddFragment {
+            return AddFragment()
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ) : View? {
+        // Инфляция layout для экрана добавления элемента
         return inflater.inflate(R.layout.fragment_add, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        // Получение ViewModel для управления состоянием библиотеки
         viewModel = ViewModelProvider(requireActivity())[LibraryViewModel::class.java]
 
-        // Поиск view по id
+        // Получение ссылок на элементы интерфейса
         val elTypeSpinner: Spinner = view.findViewById(R.id.s_item_edit_element_type)
         val field1EditText: EditText = view.findViewById(R.id.ett_item_edit_field_2)
         val field2EditText: EditText = view.findViewById(R.id.ett_item_edit_field_3)
         val field3EditText: EditText = view.findViewById(R.id.ett_item_edit_field_4)
         val saveButton: Button = view.findViewById(R.id.b_item_edit_add_el)
 
-        // Настройка спиннера
+        // Создание списка вариантов для выбора типа элемента
         val spinnerItems = listOf(
             SpinnerItem(R.drawable.book, "Книга"),
             SpinnerItem(R.drawable.disk, "Диск"),
             SpinnerItem(R.drawable.newspaper, "Газета")
         )
+        // Установка адаптера для spinner'а с иконками и подписями
         val spinnerAdapter = SpinnerItemAdapter(requireContext(), spinnerItems)
         elTypeSpinner.adapter = spinnerAdapter
 
-        // Слушатель для изменения типа
+        // Обработка выбора типа элемента в spinner'е
         elTypeSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
-                parent: AdapterView<*>?,
-                view: View?,
-                position: Int,
-                id: Long
+                parent: AdapterView<*>?, view: View?, position: Int, id: Long
             ) {
                 val selectedItem = parent?.getItemAtPosition(position) as SpinnerItem
+                // Установка подсказок и видимости полей в зависимости от выбранного типа
                 when (selectedItem.text) {
                     "Книга" -> {
                         field1EditText.hint = "Название"
@@ -72,7 +81,6 @@ class AddFragment : Fragment() {
                     "Диск" -> {
                         field1EditText.hint = "Название"
                         field2EditText.hint = "Тип (CD или DVD)"
-                        // Для диска поле 3 не используется
                         field2EditText.visibility = View.VISIBLE
                         field3EditText.visibility = View.GONE
                     }
@@ -88,13 +96,16 @@ class AddFragment : Fragment() {
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
 
-        // Обработчик нажатий для кнопки сохранения
+        // Обработка нажатия кнопки "Сохранить"
         saveButton.setOnClickListener {
+            // Получение выбранного типа элемента
             val selectedType = (elTypeSpinner.selectedItem as SpinnerItem).text
+            // Получение введённых пользователем данных
             val field1 = field1EditText.text.toString().trim()
             val field2 = field2EditText.text.toString().trim()
             val field3 = field3EditText.text.toString().trim()
 
+            // Создание нового элемента библиотеки в зависимости от выбранного типа
             val newItem: LibraryItem? = when (selectedType) {
                 "Книга" -> {
                     val numberOfPages = field3.toIntOrNull()
@@ -126,10 +137,37 @@ class AddFragment : Fragment() {
                 else -> null
             }
 
-            // Если элемент создан успешно - добавляем его
+            // Добавление элемента в библиотеку, если данные корректны
             if (newItem != null) {
                 viewModel.addItem(newItem)
-                findNavController().popBackStack()
+                // Получение id нового элемента
+                val newId = viewModel.items.value?.lastOrNull()?.id ?: 0
+
+                // Выход из режима добавления
+                viewModel.isAddMode.value = false
+
+                // Выделение нового элемента для отображения деталей
+                val item = viewModel.items.value?.find { it.id == newId }
+                if (item != null) {
+                    viewModel.selectedDetailData.value = DetailData(
+                        itemId = item.id,
+                        itemType = when (item) {
+                            is Book -> "Book"
+                            is Disk -> "Disk"
+                            is Newspaper -> "Newspaper"
+                            else -> "unknown"
+                        },
+                        itemName = item.name,
+                        author = if (item is Book) item.author else null,
+                        pages = if (item is Book) item.numberOfPages else -1,
+                        diskType = if (item is Disk) if (item.type == 0) "CD" else "DVD" else null,
+                        issueNumber = if (item is Newspaper) item.issueNumber else -1,
+                        month = if (item is Newspaper) item.monthOfPublication.russianName else null
+                    )
+                } else {
+                    // Если элемент не найден, сбрасывается выделение
+                    viewModel.selectedDetailData.value = null
+                }
             }
         }
     }
