@@ -10,7 +10,10 @@ import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 
 // Класс с сылками на элементы карточки и методом для бинда
-class LibraryViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+class LibraryViewHolder(
+    view: View,
+    private val onItemClick: (LibraryItem) -> Unit
+) : RecyclerView.ViewHolder(view) {
 
     val cardView: CardView = view.findViewById(R.id.cv_library_item)
     val nameTextView: TextView = view.findViewById(R.id.tv_card_item_name)
@@ -18,8 +21,6 @@ class LibraryViewHolder(view: View) : RecyclerView.ViewHolder(view) {
     val iconImageView: ImageView = view.findViewById(R.id.iv_card_icon)
 
     fun bind(item: LibraryItem) {
-        Log.d("LibraryAdapter", "onBindViewHolder: Элемент ${item.id} (${item.name}) перерисован")
-
         nameTextView.text = item.name
         idTextView.text = "ID: ${item.id}"
         // Установка иконки в зависимости от типа элемента
@@ -34,12 +35,7 @@ class LibraryViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         // Привязка слушателя к методу onItemClick
         itemView.setOnClickListener {
-            val context = itemView.context
-            val intent = DetailActivity.createIntent(context, item)
-            context.startActivity(intent)
+            onItemClick(item)
         }
-
-        // Костыль для автоматической прокрутки длинных названий
-        nameTextView.isSelected = true
     }
 }

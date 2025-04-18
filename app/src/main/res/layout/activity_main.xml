@@ -1,29 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/main_container"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_library_list"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:clipToPadding="false"
-        android:paddingTop="0dp" />
-
-    <Button
-        android:id="@+id/b_item_edit_add_el"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_marginBottom="15dp"
-        android:fontFamily="serif"
-        android:text="Добавить элемент"
-        android:textAllCaps="false"
-        android:textColor="@color/white"
-        android:textSize="20sp"
-        app:cornerRadius="5dp" />
-
-</LinearLayout>
+    android:layout_height="match_parent"/>
