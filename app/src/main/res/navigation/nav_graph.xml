@@ -60,6 +60,6 @@
 
     <fragment
         android:id="@+id/addFragment"
-        android:name="com.example.library.ui.fragments.AddFragment"
+        android:name="com.example.library.ui.fragments.AddLibraryItemFragment"
         android:label="Добавить элемент" />
 </navigation>

@@ -7,7 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.library.data.DetailData
-import com.example.library.ui.fragments.AddFragment
+import com.example.library.ui.fragments.AddLibraryItemFragment
 import com.example.library.ui.fragments.ListFragment
 
 class MainActivity : AppCompatActivity() {
@@ -31,17 +31,13 @@ class MainActivity : AppCompatActivity() {
 
         // Добавление фрагмента со списком элементов в нужный контейнер
         if (isLandscape) {
-            if (supportFragmentManager.findFragmentById(R.id.list_container) == null) {
-                supportFragmentManager.beginTransaction()
-                    .replace(R.id.list_container, ListFragment())
-                    .commit()
-            }
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.list_container, ListFragment())
+                .commit()
         } else {
-            if (supportFragmentManager.findFragmentById(R.id.main_container) == null) {
-                supportFragmentManager.beginTransaction()
-                    .replace(R.id.main_container, ListFragment())
-                    .commit()
-            }
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.main_container, ListFragment())
+                .commit()
         }
 
         // Подписка на изменение выбранного элемента для обновления UI
@@ -64,7 +60,7 @@ class MainActivity : AppCompatActivity() {
             if (detailFrag != null) ft.remove(detailFrag)
             when {
                 // Добавление фрагмента добавления при активном режиме добавления
-                isAddMode -> ft.replace(R.id.detail_container, AddFragment.newInstance())
+                isAddMode -> ft.replace(R.id.detail_container, AddLibraryItemFragment.newInstance())
                 // Добавление фрагмента деталей при выборе элемента
                 detailData != null -> ft.replace(R.id.detail_container, DetailFragment.newInstance(
                     detailData.itemId, detailData.itemType, detailData.itemName,
@@ -80,9 +76,9 @@ class MainActivity : AppCompatActivity() {
             val currentFragment = supportFragmentManager.findFragmentById(R.id.main_container)
             if (isAddMode) {
                 // Добавление фрагмента добавления при его отсутствии
-                if (currentFragment !is AddFragment) {
+                if (currentFragment !is AddLibraryItemFragment) {
                     supportFragmentManager.beginTransaction()
-                        .replace(R.id.main_container, AddFragment.newInstance())
+                        .replace(R.id.main_container, AddLibraryItemFragment.newInstance())
                         .addToBackStack(null)
                         .commit()
                 }
@@ -90,11 +86,19 @@ class MainActivity : AppCompatActivity() {
                 // Добавление фрагмента деталей при его отсутствии
                 if (currentFragment !is DetailFragment) {
                     supportFragmentManager.beginTransaction()
-                        .replace(R.id.main_container, DetailFragment.newInstance(
-                            detailData.itemId, detailData.itemType, detailData.itemName,
-                            detailData.author, detailData.pages, detailData.diskType,
-                            detailData.issueNumber, detailData.month
-                        ))
+                        .replace(
+                            R.id.main_container,
+                            DetailFragment.newInstance(
+                                itemId = detailData.itemId,
+                                itemType = detailData.itemType,
+                                itemName = detailData.itemName,
+                                author = detailData.author,
+                                pages = detailData.pages,
+                                diskType = detailData.diskType,
+                                issueNumber = detailData.issueNumber,
+                                month = detailData.month
+                            )
+                        )
                         .addToBackStack(null)
                         .commit()
                 }
@@ -117,20 +121,11 @@ class MainActivity : AppCompatActivity() {
 
     // Обработка нажатия кнопки "назад"
     override fun onBackPressed() {
-        if (isLandscape) {
-            // В альбомной ориентации закрытие detail/add фрагментов или стандартное поведение
-            when {
-                viewModel.isAddMode.value == true -> viewModel.isAddMode.value = false
-                viewModel.selectedDetailData.value != null -> viewModel.selectedDetailData.value = null
-                else -> super.onBackPressed()
-            }
-        } else {
-            // В портретной ориентации закрытие detail/add фрагментов или стандартное поведение
-            when {
-                viewModel.isAddMode.value == true -> viewModel.isAddMode.value = false
-                viewModel.selectedDetailData.value != null -> viewModel.selectedDetailData.value = null
-                else -> super.onBackPressed()
-            }
+
+        when {
+            viewModel.isAddMode.value == true -> viewModel.isAddMode.value = false
+            viewModel.selectedDetailData.value != null -> viewModel.selectedDetailData.value = null
+            else -> super.onBackPressed()
         }
     }
 }

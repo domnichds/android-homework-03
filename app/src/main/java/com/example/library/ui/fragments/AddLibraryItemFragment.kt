@@ -22,15 +22,15 @@ import com.example.library.SpinnerItem
 import com.example.library.SpinnerItemAdapter
 import com.example.library.data.DetailData
 
-class AddFragment : Fragment() {
+class AddLibraryItemFragment : Fragment() {
 
     // Создание переменной для хранения ViewModel
     private lateinit var viewModel: LibraryViewModel
 
     companion object {
         // Создание нового экземпляра фрагмента для добавления элемента
-        fun newInstance(): AddFragment {
-            return AddFragment()
+        fun newInstance(): AddLibraryItemFragment {
+            return AddLibraryItemFragment()
         }
     }
 
